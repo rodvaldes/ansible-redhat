@@ -1,0 +1,25 @@
+---
+- hosts: localhost
+  become: yes
+  vars:
+    users:
+    - username: "admin"
+    - username: "devops"
+    - username: "dba"
+    - username: "bamboo"
+  tasks:
+
+  - name: Agregando el grupo de usuarios DevSecOps
+    group:
+      name: devsecops
+      state: present
+
+  - name: Agregando usuario {{ item.username }}
+    user: 
+      name: "{{ item.username }}"
+      create_home: yes
+      comment: "Creado con Ansible CoE DevSecOps"
+      password: "{{ 'password' | password_hash('sha512') }}"
+      update_password: on_create
+      groups: devsecops
+    with_items: "{{ users }}"
